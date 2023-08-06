@@ -1,0 +1,14 @@
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(10, max-content);
+  grid-template-rows: repeat(10, max-content);
+  gap: 1em;
+
+  .square {
+    border: 1px black solid;
+  }
+
+  .square.locked {
+    background: #e5e5e5;
+  }
+}
