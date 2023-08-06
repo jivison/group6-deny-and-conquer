@@ -1,33 +1,38 @@
 import { GameSquare } from "./GameSquare";
-import { Player } from "./Player";
+import { ServerPlayer } from "./ServerPlayer";
 
 export interface GameSquareCoord {
   x: number;
   y: number;
 }
 
-export class GameBoard {
+/** Maintains the internal game board state, acting as the source of truth for the clients */
+export class ServerGameBoard {
   private squares: GameSquare[][];
 
+  /** Initialize the game board with `rows` rows and `cols` cols */
   constructor(rows: number, cols: number) {
     this.squares = Array.from({ length: rows }, () =>
       Array.from({ length: cols }, () => new GameSquare())
     );
   }
 
-  claimSquare(coord: GameSquareCoord, player: Player): void {
+  /** Update a square to be claimed by a user */
+  claimSquare(coord: GameSquareCoord, player: ServerPlayer): void {
     const square = this.getSquare(coord);
 
     square.claimFor(player);
   }
 
-  lockSquare(coord: GameSquareCoord, player: Player): void {
+  /** Update a square to be locked by a user */
+  lockSquare(coord: GameSquareCoord, player: ServerPlayer): void {
     const square = this.getSquare(coord);
 
     square.lock(player);
   }
 
-  unlockSquare(coord: GameSquareCoord, player: Player): void {
+  /** Update a square to be unlocked */
+  unlockSquare(coord: GameSquareCoord, player: ServerPlayer): void {
     const square = this.getSquare(coord);
 
     square.unlock(player);
@@ -37,8 +42,9 @@ export class GameBoard {
     return this.allSquares().every((s) => s.isClaimed());
   }
 
-  getScores(): [player: Player, score: number][] {
-    const players = {} as Record<number, Player>;
+  /** Calculate the number of tiles each player has claimed */
+  getScores(): [player: ServerPlayer, score: number][] {
+    const players = {} as Record<number, ServerPlayer>;
 
     const scoresObj = this.allSquares().reduce((acc, square) => {
       if (!acc[square.claimant().id]) {
@@ -53,16 +59,19 @@ export class GameBoard {
 
     const scores = Object.entries(scoresObj).map(
       ([playerID, score]) =>
-        [players[parseInt(playerID)], score] as [Player, number]
+        [players[parseInt(playerID)], score] as [ServerPlayer, number]
     );
 
+    // Sort scores from high to low
     return scores.sort(([, a], [, b]) => b - a);
   }
 
+  /** Returns a single dimensional array of all the squares */
   private allSquares(): GameSquare[] {
     return this.squares.flat();
   }
 
+  /** Retrieve a game square from the board */
   private getSquare(coord: GameSquareCoord): GameSquare {
     const square = this.squares[coord.y]?.[coord.x];
 

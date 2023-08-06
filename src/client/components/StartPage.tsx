@@ -1,15 +1,23 @@
 import { useState } from "react";
-import "./LoginPage.css";
+import "./StartPage.css";
 
 const defaultIP = "127.0.0.1";
 
-export function LoginPage({
-  onJoinServer,
-  onStartServer,
-}: {
+interface StartPageProps {
+  /**
+   * Callback for when the user attempts to join a server
+   * @param ipAddress The IP address of the server to attempt to join
+   */
   onJoinServer: (ipAddress: string) => void;
+  /**
+   * Callback for when the user attempts to start a server
+   * @param numberOfPlayers The number of players to start the server with
+   */
   onStartServer: (numberOfPlayers: number) => void;
-}) {
+}
+
+/** Displays the start page, allowing the user to start or join a server */
+export function StartPage({ onJoinServer, onStartServer }: StartPageProps) {
   const [ipAddress, setIpAddress] = useState(defaultIP);
   const [numberOfPlayers, setNumberOfPlayers] = useState(0);
 

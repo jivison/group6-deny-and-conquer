@@ -1,11 +1,13 @@
-import { Player } from "./Player";
+import { ServerPlayer } from "./ServerPlayer";
 
+/** Incoming packets from the client */
 export type ClientAction = NewClient | ClaimSquare | LockSquare | UnlockSquare;
 
+/** Any action that involves action on a game square */
 interface SquareBasedAction {
   x: number;
   y: number;
-  player: Player;
+  player: ServerPlayer;
 }
 
 export interface NewClient {

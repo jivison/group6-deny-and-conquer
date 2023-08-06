@@ -1,17 +1,18 @@
 import { useState } from "react";
-import { GameClient } from "../network/GameClient";
-import { GameSquare } from "../structures/GameSquare";
+import { GameSquare } from "../../server/game/GameSquare";
+import { PlayerClient } from "../PlayerClient";
 import { Player } from "../structures/Player";
 import "./GameBoardDisplay.css";
 import { GameSquareDisplay } from "./GameSquareDisplay";
 
-export function GameBoardDisplay({
-  client,
-  player,
-}: {
-  client: GameClient;
+interface GameBoardDisplay {
+  /** The user's client, used for dispatching and responding to events */
+  client: PlayerClient;
+  /** The user's player */
   player: Player;
-}) {
+}
+
+export function GameBoardDisplay({ client, player }: GameBoardDisplay) {
   const [squares, setSquares] = useState(client.board.getSquares());
 
   client.emitter.on("boardChange", (newSquares: GameSquare[][]) => {

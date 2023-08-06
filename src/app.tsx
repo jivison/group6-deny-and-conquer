@@ -1,5 +1,5 @@
 import * as ReactDOM from "react-dom";
-import { App } from "./components/App";
+import { App } from "./client/components/App";
 
 console.log("rendering...");
 

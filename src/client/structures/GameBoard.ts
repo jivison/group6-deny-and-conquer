@@ -1,5 +1,5 @@
-import { GameSquareCoord } from "../network/server/game/GameBoard";
-import { GameSquare } from "./GameSquare";
+import { GameSquare } from "../../server/game/GameSquare";
+import { GameSquareCoord } from "../../server/game/ServerGameBoard";
 import { Player } from "./Player";
 
 export class GameBoard {

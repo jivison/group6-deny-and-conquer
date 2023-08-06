@@ -1,15 +1,18 @@
 import { useState } from "react";
-import { GameClient } from "../network/GameClient";
-import { config } from "../network/server/config";
-import { GameServer } from "../network/server/network/GameServer";
+import { config } from "../../server/config";
+import { GameServer } from "../../server/network/GameServer";
+import { PlayerClient } from "../PlayerClient";
 import { Player } from "../structures/Player";
 import { GameBoardDisplay } from "./GameBoardDisplay";
-import { LoginPage } from "./LoginPage";
 import { ScoresPage } from "./ScoresPage";
+import { StartPage } from "./StartPage";
 import { WaitingPage } from "./WaitingPage";
 
+/**
+ * The application component, controls all logic and UI
+ */
 export function App() {
-  const [gameClient, setGameClient] = useState<GameClient | undefined>(
+  const [playerClient, setPlayerClient] = useState<PlayerClient | undefined>(
     undefined
   );
   const [player, setPlayer] = useState<Player | undefined>(undefined);
@@ -18,19 +21,18 @@ export function App() {
   );
   const [waiting, setWaiting] = useState(true);
 
+  // Join a remote server
   const handleJoinServer = async (ipAddress: string) => {
-    const gameClient = new GameClient(ipAddress, 3710);
+    const gameClient = new PlayerClient(ipAddress, 3710);
 
     await gameClient.connect();
 
     gameClient.emitter.on("gameEnd", setScores);
     gameClient.emitter.on("gameStart", () => {
-      console.log("Starting game...");
-
       setWaiting(false);
     });
 
-    setGameClient(gameClient);
+    setPlayerClient(gameClient);
 
     setWaiting(true);
 
@@ -38,6 +40,7 @@ export function App() {
     setPlayer(player);
   };
 
+  // Start a local server
   const handleStartServer = async (numberOfPlayers: number) => {
     const server = new GameServer(numberOfPlayers);
 
@@ -48,19 +51,23 @@ export function App() {
 
   return (
     <div className="App">
+      {/* Show the login page if the user has not joined or starter a server */}
       {!scores && !player && (
-        <LoginPage
+        <StartPage
           onJoinServer={handleJoinServer}
           onStartServer={handleStartServer}
         />
       )}
 
+      {/* Show the waiting page if not all players have joined */}
       {!scores && player && waiting && <WaitingPage />}
 
+      {/* Show the game board if all players have joined */}
       {!scores && player && !waiting && (
-        <GameBoardDisplay client={gameClient} player={player} />
+        <GameBoardDisplay client={playerClient} player={player} />
       )}
 
+      {/* Show the final scores if the game is over */}
       {scores && <ScoresPage scores={scores} />}
     </div>
   );

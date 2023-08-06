@@ -1,25 +1,37 @@
-import { GameClient } from "../network/GameClient";
-import { GameSquare } from "../structures/GameSquare";
+import { GameSquare } from "../../server/game/GameSquare";
+import { PlayerClient } from "../PlayerClient";
 import { Player } from "../structures/Player";
 import { DrawableSquare } from "./DrawableSquare";
 
+interface GameSquareDisplayProps {
+  /** The square to display */
+  square: GameSquare;
+  /** The user's client */
+  client: PlayerClient;
+  /** The user's player */
+  player: Player;
+  /** The x coordinate of the square */
+  x: number;
+  /** The y coordinate of the square */
+  y: number;
+}
+
+/** Displays a single game square on the board */
 export function GameSquareDisplay({
   square,
   player,
   client,
   x,
   y,
-}: {
-  square: GameSquare;
-  client: GameClient;
-  player: Player;
-  x: number;
-  y: number;
-}) {
+}: GameSquareDisplayProps) {
+  /** Lock the square when the user starts drawing */
   const onDrawStart = () => {
     client.lockSquare(player, { x, y });
   };
 
+  /** Once the user has stopped drawing, check if the user has painted over half the square
+   * If they have, claim the tile, otherwise, unlock it
+   */
   const onDrawStop = (canvas: HTMLCanvasElement) => {
     const paintedAmount = canvas
       .getContext("2d")
@@ -48,5 +60,3 @@ export function GameSquareDisplay({
     />
   );
 }
-
-// style={{ backgroundColor: square.claimant()?.color }}
